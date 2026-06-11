@@ -111,7 +111,7 @@
   @keyframes sheen{100%{transform:translateX(100%)}}
 
   /* dropzone (es un <label> para que el selector abra siempre) */
-  .drop-inner{text-align:center;cursor:pointer;display:none;user-select:none}
+  .drop-inner{position:relative;text-align:center;cursor:pointer;display:none;user-select:none}
   .drop-inner.ready{display:block;animation:pop .5s cubic-bezier(.2,1.4,.3,1)}
   .drop-icon{font-family:'Archivo Black',sans-serif;font-size:42px;color:var(--stamp);line-height:1;margin-bottom:14px;animation:floaty 1.9s ease-in-out infinite}
   .label-card.drag .drop-icon{animation:floaty .6s ease-in-out infinite}
@@ -119,7 +119,7 @@
   .drop-title{font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:clamp(24px,5.5vw,34px);letter-spacing:-.01em;line-height:1.05}
   .drop-hint{font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.05em;color:var(--ink-soft);margin-top:12px}
   .drop-hint .pick{color:var(--stamp-deep);text-decoration:underline;text-underline-offset:3px;font-weight:700}
-  input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0)}
+  .drop-inner input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0;z-index:3}
   @keyframes pop{0%{opacity:0;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
 
   /* consola de proceso */
@@ -226,12 +226,12 @@
     </div>
 
     <!-- label nativo: el for abre el selector en todos los navegadores -->
-    <label class="drop-inner" id="dropInner" for="fileInput">
+    <div class="drop-inner" id="dropInner">
       <div class="drop-icon">↓</div>
       <div class="drop-title">Soltá tu CSV acá</div>
       <div class="drop-hint">o <span class="pick">elegí el archivo</span> &nbsp;·&nbsp; orders_export.csv</div>
-    </label>
-    <input type="file" id="fileInput" accept=".csv" disabled>
+      <input type="file" id="fileInput" accept=".csv">
+    </div>
 
     <div class="console" id="console"></div>
 
@@ -289,7 +289,7 @@ const els = {
   againBtn:document.getElementById('againBtn'),
 };
 
-let pyodide = null, ready = false, lastBlob = null;
+let pyodide = null, ready = false, lastBlob = null, pendingFile = null;
 
 function setBar(p){ els.bootBar.style.width = Math.max(0,Math.min(100,p))+'%'; }
 function bootStep(txt){ els.bootSub.textContent = txt; }
@@ -323,11 +323,11 @@ async function boot(){
     setBar(100);
     ready = true;
     els.engine.textContent = 'Motor: listo ✓';
-    els.file.disabled = false;          // ← habilita el selector recién cuando está todo listo
     setTimeout(()=>{
       els.boot.classList.add('hidden');
       els.dropInner.classList.add('ready');
     }, 350);
+    if(pendingFile){ const f=pendingFile; pendingFile=null; convert(f); }
   }catch(e){
     els.engine.textContent = 'Motor: error';
     els.bootSub.innerHTML = '<span style="color:var(--stamp-deep);font-weight:700">No se pudo iniciar. Recargá la página (necesitás conexión la primera vez).</span>';
@@ -370,7 +370,7 @@ function download(){
 }
 
 // el <input> dispara convert al elegir archivo (vía el label nativo)
-els.file.addEventListener('change', e=>{ if(e.target.files[0]) convert(e.target.files[0]); e.target.value=''; });
+els.file.addEventListener('change', e=>{ const f=e.target.files[0]; e.target.value=''; if(!f) return; if(ready) convert(f); else { pendingFile=f; els.bootSub.textContent='Archivo recibido, se procesa al terminar de cargar…'; } });
 els.dlBtn.addEventListener('click', download);
 els.againBtn.addEventListener('click', ()=>{
   els.result.classList.remove('show');
