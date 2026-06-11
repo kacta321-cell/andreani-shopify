@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+Andreani_envio.xlsx
+orders_export*.csv
