@@ -24,28 +24,20 @@
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{
-    font-family:'Archivo',sans-serif;
-    background:var(--kraft);
-    color:var(--ink);
-    min-height:100vh;
-    position:relative;
-    overflow-x:hidden;
-    -webkit-font-smoothing:antialiased;
+    font-family:'Archivo',sans-serif;background:var(--kraft);color:var(--ink);
+    min-height:100vh;position:relative;overflow-x:hidden;-webkit-font-smoothing:antialiased;
   }
-  /* grano de papel */
   body::before{
     content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.45;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
     mix-blend-mode:multiply;
   }
-  /* viñeta cálida */
   body::after{
     content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
     background:radial-gradient(120% 90% at 50% 0%, transparent 55%, rgba(28,24,19,.13) 100%);
   }
   .wrap{position:relative;z-index:2;max-width:760px;margin:0 auto;padding:clamp(24px,5vw,56px) 22px 60px}
 
-  /* ── encabezado tipo etiqueta postal ── */
   .topbar{
     display:flex;justify-content:space-between;align-items:center;
     font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
@@ -59,31 +51,27 @@
   .hero{margin-bottom:clamp(30px,6vw,52px)}
   .kicker{
     font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.32em;
-    text-transform:uppercase;color:var(--stamp-deep);font-weight:700;
-    margin-bottom:14px;opacity:0;animation:fade .7s .25s forwards;
+    text-transform:uppercase;color:var(--stamp-deep);font-weight:700;margin-bottom:14px;
+    opacity:0;animation:fade .7s .25s forwards;
   }
   h1{
-    font-family:'Archivo Black',sans-serif;
-    font-size:clamp(58px,16vw,124px);line-height:.86;letter-spacing:-.03em;
-    text-transform:uppercase;color:var(--ink);position:relative;
+    font-family:'Archivo Black',sans-serif;font-size:clamp(58px,16vw,124px);line-height:.86;
+    letter-spacing:-.03em;text-transform:uppercase;color:var(--ink);
     opacity:0;animation:slideUp .8s .3s cubic-bezier(.2,.9,.25,1) forwards;
   }
   h1 .arrow{color:var(--stamp);display:inline-block}
   .sub{
     font-size:clamp(17px,3.6vw,22px);max-width:30ch;margin-top:20px;color:var(--ink-soft);
-    font-weight:500;line-height:1.4;
-    opacity:0;animation:fade .7s .5s forwards;
+    font-weight:500;line-height:1.4;opacity:0;animation:fade .7s .5s forwards;
   }
   .sub b{color:var(--ink);font-weight:700}
 
-  /* ── tira de pasos ── */
   .steps{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:0;
-    border:2px solid var(--line);margin:clamp(32px,6vw,46px) 0;
-    background:var(--paper-edge);
+    display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--line);
+    margin:clamp(32px,6vw,46px) 0;background:var(--paper-edge);
     opacity:0;animation:fade .7s .6s forwards;
   }
-  .step{padding:18px 16px;position:relative}
+  .step{padding:18px 16px}
   .step:not(:last-child){border-right:2px dashed var(--line)}
   .step .num{font-family:'Archivo Black',sans-serif;font-size:13px;color:var(--stamp);letter-spacing:.05em}
   .step .txt{font-size:13.5px;margin-top:7px;line-height:1.35;color:var(--ink-soft);font-weight:500}
@@ -92,55 +80,56 @@
     .step:not(:last-child){border-right:none;border-bottom:2px dashed var(--line)}
   }
 
-  /* ── zona de carga: etiqueta de paquete ── */
   .label-card{
-    position:relative;background:var(--paper-edge);
-    border:2.5px solid var(--line);
+    position:relative;background:var(--paper-edge);border:2.5px solid var(--line);
     padding:clamp(30px,6vw,48px) clamp(22px,5vw,40px);
     opacity:0;animation:fade .7s .7s forwards;
     transition:transform .25s ease, box-shadow .25s ease, background .2s;
     box-shadow:7px 7px 0 var(--line);
   }
-  .label-card::before{ /* perforación interior */
-    content:"";position:absolute;inset:9px;border:1.5px dashed rgba(28,24,19,.4);pointer-events:none;
-  }
+  .label-card::before{content:"";position:absolute;inset:9px;border:1.5px dashed rgba(28,24,19,.4);pointer-events:none}
   .label-card.drag{background:#FBF4E6;transform:translate(-2px,-2px);box-shadow:11px 11px 0 var(--stamp)}
-  .label-card.busy{pointer-events:none}
   .barcode{height:34px;width:100%;
     background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 7px,transparent 7px 9px,var(--ink) 9px 10px,transparent 10px 14px);
     margin-bottom:22px;opacity:.85}
-  .drop-inner{text-align:center;cursor:pointer;display:block}
-  .drop-icon{font-family:'Archivo Black',sans-serif;font-size:40px;color:var(--stamp);line-height:1;margin-bottom:14px}
-  .drop-title{font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:clamp(22px,5vw,30px);letter-spacing:-.01em;line-height:1.05}
-  .drop-hint{font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.05em;color:var(--ink-soft);margin-top:12px}
-  .drop-hint .pick{color:var(--stamp-deep);text-decoration:underline;text-underline-offset:3px;font-weight:700}
-  input[type=file]{display:none}
 
-  /* ── consola de estado ── */
+  /* ── estado de carga (boot) ── */
+  .boot{text-align:center;padding:8px 0}
+  .boot.hidden{display:none}
+  .boot-title{font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:clamp(18px,4vw,24px);line-height:1.1;margin-bottom:6px}
+  .boot-sub{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);min-height:18px;margin-bottom:16px;letter-spacing:.03em}
+  .bar{height:8px;background:var(--kraft-deep);overflow:hidden;border:1.5px solid var(--line);max-width:340px;margin:0 auto}
+  .bar > i{display:block;height:100%;width:0;background:var(--stamp);transition:width .4s ease}
+
+  /* ── dropzone ── */
+  .drop-inner{text-align:center;cursor:pointer;display:none;user-select:none}
+  .drop-inner.ready{display:block;animation:pop .5s cubic-bezier(.2,1.4,.3,1)}
+  .drop-icon{font-family:'Archivo Black',sans-serif;font-size:40px;color:var(--stamp);line-height:1;margin-bottom:14px}
+  .drop-title{font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:clamp(24px,5.5vw,34px);letter-spacing:-.01em;line-height:1.05}
+  .drop-hint{font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.05em;color:var(--ink-soft);margin-top:12px}
+  .drop-hint .pick{color:var(--stamp-deep);text-decoration:underline;text-underline-offset:3px;font-weight:700;cursor:pointer}
+  input[type=file]{display:none}
+  @keyframes pop{0%{opacity:0;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
+
+  /* ── consola de proceso ── */
   .console{
-    font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.7;
-    color:var(--ink-soft);margin-top:20px;min-height:22px;
-    border-top:1.5px dashed rgba(28,24,19,.35);padding-top:14px;
-    display:none;
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.7;color:var(--ink-soft);
+    margin-top:20px;border-top:1.5px dashed rgba(28,24,19,.35);padding-top:14px;display:none;
   }
   .console.show{display:block}
   .console .ln{display:block;white-space:pre-wrap}
-  .console .ln b{color:var(--ink)}
   .console .ok{color:var(--seal);font-weight:700}
   .console .err{color:var(--stamp-deep);font-weight:700}
-  .bar{height:6px;background:var(--kraft-deep);margin-top:6px;overflow:hidden;border:1px solid var(--line)}
-  .bar > i{display:block;height:100%;width:0;background:var(--stamp);transition:width .4s ease}
 
   /* ── sello DESPACHADO ── */
-  .result{display:none;margin-top:26px;text-align:center;position:relative}
+  .result{display:none;margin-top:26px;text-align:center}
   .result.show{display:block}
   .stamp{
     display:inline-block;font-family:'Archivo Black',sans-serif;text-transform:uppercase;
     font-size:clamp(26px,6vw,40px);color:var(--stamp);border:5px solid var(--stamp);
     padding:8px 22px;letter-spacing:.04em;transform:rotate(-7deg);
     box-shadow:inset 0 0 0 2px var(--paper-edge);
-    animation:slam .5s cubic-bezier(.2,1.5,.3,1) forwards;
-    mix-blend-mode:multiply;opacity:.92;
+    animation:slam .5s cubic-bezier(.2,1.5,.3,1) forwards;mix-blend-mode:multiply;opacity:.92;
   }
   @keyframes slam{0%{transform:rotate(-7deg) scale(2.4);opacity:0}60%{opacity:.92}70%{transform:rotate(-7deg) scale(.92)}100%{transform:rotate(-7deg) scale(1);opacity:.92}}
   .result .meta{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink);margin-top:18px}
@@ -156,7 +145,6 @@
   .again{display:block;margin:16px auto 0;background:none;border:none;cursor:pointer;
     font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.08em;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px}
 
-  /* ── privacidad / footer ── */
   .privacy{
     margin-top:30px;display:flex;gap:12px;align-items:flex-start;
     font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:var(--ink-soft);
@@ -166,11 +154,32 @@
   .privacy b{color:var(--ink)}
   footer{
     margin-top:42px;padding-top:18px;border-top:2px solid var(--line);
-    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center;
     font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
     opacity:0;animation:fade .7s 1s forwards;
   }
+  footer .by{font-size:13px;letter-spacing:.04em;text-transform:none}
+  footer .by b{font-family:'Archivo Black',sans-serif;color:var(--ink);text-transform:uppercase;letter-spacing:.01em}
   footer a{color:var(--stamp-deep);font-weight:700;text-decoration:none;border-bottom:1.5px solid var(--stamp-deep)}
+
+  /* ── lo que resuelve ── */
+  .solves{margin-top:clamp(40px,7vw,62px);opacity:0;animation:fade .7s .8s forwards}
+  .solves h2{font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:clamp(24px,5.5vw,38px);line-height:.98;letter-spacing:-.02em}
+  .solves h2 em{font-style:normal;color:var(--stamp)}
+  .solves .lead{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin:10px 0 22px;letter-spacing:.03em;line-height:1.5}
+  .solve-grid{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--line);background:var(--paper-edge)}
+  .solve{display:flex;gap:13px;padding:17px 18px}
+  .solve:nth-child(odd){border-right:2px dashed var(--line)}
+  .solve:not(:nth-last-child(-n+2)){border-bottom:1.5px dashed rgba(28,24,19,.32)}
+  .solve .ck{flex:0 0 22px;width:22px;height:22px;border:2px solid var(--seal);color:var(--seal);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:1px}
+  .solve b{display:block;font-size:14.5px;font-weight:700;line-height:1.25;margin-bottom:3px}
+  .solve span{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);line-height:1.45;display:block}
+  @media(max-width:560px){
+    .solve-grid{grid-template-columns:1fr}
+    .solve:nth-child(odd){border-right:none}
+    .solve:not(:last-child){border-bottom:1.5px dashed rgba(28,24,19,.32)}
+  }
 
   @keyframes fade{to{opacity:1}}
   @keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
@@ -200,20 +209,45 @@
   <section class="label-card" id="card">
     <div class="barcode"></div>
 
-    <label class="drop-inner" id="dropInner" for="fileInput">
+    <!-- estado de carga -->
+    <div class="boot" id="boot">
+      <div class="boot-title">Preparando el motor…</div>
+      <div class="boot-sub" id="bootSub">Cargando, esperá unos segundos</div>
+      <div class="bar"><i id="bootBar"></i></div>
+    </div>
+
+    <!-- dropzone (aparece cuando está listo) -->
+    <div class="drop-inner" id="dropInner">
       <div class="drop-icon">↓</div>
       <div class="drop-title">Soltá tu CSV acá</div>
-      <div class="drop-hint">o <span class="pick">elegí el archivo</span> &nbsp;·&nbsp; orders_export.csv</div>
-    </label>
+      <div class="drop-hint">o <span class="pick" id="pick">elegí el archivo</span> &nbsp;·&nbsp; orders_export.csv</div>
+    </div>
     <input type="file" id="fileInput" accept=".csv">
 
+    <!-- consola de proceso -->
     <div class="console" id="console"></div>
 
+    <!-- resultado -->
     <div class="result" id="result">
       <div class="stamp" id="stamp">Despachado</div>
       <div class="meta" id="meta"></div>
-      <button class="dl" id="dlBtn">⬇ Descargar Excel</button>
+      <button class="dl" id="dlBtn">⬇ Descargar de nuevo</button>
       <button class="again" id="againBtn">convertir otro archivo</button>
+    </div>
+  </section>
+
+  <section class="solves">
+    <h2>Mata los errores que te <em>frenaban</em>.</h2>
+    <p class="lead">Cada cosa que hacía rebotar el Excel en Andreani, resuelta automáticamente:</p>
+    <div class="solve-grid">
+      <div class="solve"><div class="ck">✓</div><div><b>Teléfonos argentinos</b><span>+54, 54, el 9 y el código de área, separados como pide Andreani.</span></div></div>
+      <div class="solve"><div class="ck">✓</div><div><b>Códigos postales con letras</b><span>B1603ADA → toma los 4 dígitos correctos.</span></div></div>
+      <div class="solve"><div class="ck">✓</div><div><b>Localidad que no matchea</b><span>Si el CP falla, busca por ciudad entre 29.922 localidades.</span></div></div>
+      <div class="solve"><div class="ck">✓</div><div><b>Total con apóstrofe</b><span>Lo que Andreani rechaza como texto, va como número.</span></div></div>
+      <div class="solve"><div class="ck">✓</div><div><b>Número de calle con texto</b><span>"975 PB" → solo el número válido, sin caracteres raros.</span></div></div>
+      <div class="solve"><div class="ck">✓</div><div><b>DNI escondido</b><span>Lo levanta de donde Shopify lo guarda (Billing Company).</span></div></div>
+      <div class="solve"><div class="ck">✓</div><div><b>Email o teléfono vacío</b><span>Completa un valor por defecto para que no rebote.</span></div></div>
+      <div class="solve"><div class="ck">✓</div><div><b>Pedidos duplicados</b><span>Una sola fila por pedido, sin repetir filas.</span></div></div>
     </div>
   </section>
 
@@ -223,7 +257,7 @@
   </div>
 
   <footer>
-    <span>© 2026 · Hecho para vendedores AR</span>
+    <span class="by">Creado por <b>Tiziano Martinelli</b></span>
     <span>Código abierto · <a href="https://github.com/kacta321-cell/andreani-shopify" target="_blank" rel="noopener">GitHub ↗</a></span>
   </footer>
 
@@ -231,21 +265,28 @@
 
 <script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
 <script>
-const RAW_BASE = "./"; // mismos archivos servidos por GitHub Pages (same-origin)
+const RAW_BASE = "./";
 const els = {
-  engine:   document.getElementById('engine'),
-  card:     document.getElementById('card'),
+  engine:  document.getElementById('engine'),
+  card:    document.getElementById('card'),
+  boot:    document.getElementById('boot'),
+  bootSub: document.getElementById('bootSub'),
+  bootBar: document.getElementById('bootBar'),
   dropInner:document.getElementById('dropInner'),
-  file:     document.getElementById('fileInput'),
-  console:  document.getElementById('console'),
-  result:   document.getElementById('result'),
-  stamp:    document.getElementById('stamp'),
-  meta:     document.getElementById('meta'),
-  dlBtn:    document.getElementById('dlBtn'),
-  againBtn: document.getElementById('againBtn'),
+  pick:    document.getElementById('pick'),
+  file:    document.getElementById('fileInput'),
+  console: document.getElementById('console'),
+  result:  document.getElementById('result'),
+  stamp:   document.getElementById('stamp'),
+  meta:    document.getElementById('meta'),
+  dlBtn:   document.getElementById('dlBtn'),
+  againBtn:document.getElementById('againBtn'),
 };
 
 let pyodide = null, ready = false, lastBlob = null;
+
+function setBar(p){ els.bootBar.style.width = Math.max(0,Math.min(100,p))+'%'; }
+function bootStep(txt){ els.bootSub.textContent = txt; }
 
 function log(msg, cls=''){
   els.console.classList.add('show');
@@ -253,30 +294,17 @@ function log(msg, cls=''){
   ln.className = 'ln' + (cls ? ' '+cls : '');
   ln.innerHTML = msg;
   els.console.appendChild(ln);
-  els.console.scrollTop = els.console.scrollHeight;
-  return ln;
-}
-function progressBar(){
-  const wrap = document.createElement('div');
-  wrap.className = 'bar'; const i = document.createElement('i');
-  wrap.appendChild(i); els.console.appendChild(wrap);
-  return p => { i.style.width = Math.max(0,Math.min(100,p))+'%'; };
 }
 
 async function boot(){
   try{
-    els.console.classList.add('show');
-    const setP = (function(){ log('<b>Inicializando motor de conversión…</b>'); return progressBar(); })();
-    setP(8);
-    log('› Cargando Python (Pyodide)…');
+    setBar(8);  bootStep('Cargando Python (Pyodide)…');
     pyodide = await loadPyodide();
-    setP(45);
-    log('› Instalando openpyxl…');
+    setBar(45); bootStep('Instalando openpyxl…');
     await pyodide.loadPackage('micropip');
     const micropip = pyodide.pyimport('micropip');
     await micropip.install('openpyxl');
-    setP(68);
-    log('› Descargando plantilla de Andreani y localidades…');
+    setBar(68); bootStep('Trayendo plantilla de Andreani y localidades…');
     const [tpl, jsonTxt, coreTxt] = await Promise.all([
       fetch(RAW_BASE+'EnvioMasivoExcelPaquetes.xlsx').then(r=>r.arrayBuffer()),
       fetch(RAW_BASE+'andreani_localidades.json').then(r=>r.text()),
@@ -285,23 +313,27 @@ async function boot(){
     pyodide.FS.writeFile('/template.xlsx', new Uint8Array(tpl));
     pyodide.FS.writeFile('/localidades.json', jsonTxt);
     pyodide.FS.writeFile('/convertir_core.py', coreTxt);
-    setP(88);
+    setBar(90); bootStep('Encendiendo motor…');
     pyodide.runPython("import sys; sys.path.insert(0,'/'); import convertir_core");
-    setP(100);
-    log('<span class="ok">✓ Listo. Soltá tu CSV cuando quieras.</span>');
-    els.engine.textContent = 'Motor: listo ✓';
+    setBar(100);
+    // listo: ocultar carga, mostrar dropzone en grande
     ready = true;
+    els.engine.textContent = 'Motor: listo ✓';
+    setTimeout(()=>{
+      els.boot.classList.add('hidden');
+      els.dropInner.classList.add('ready');
+    }, 350);
   }catch(e){
     els.engine.textContent = 'Motor: error';
-    log('<span class="err">✗ No se pudo iniciar: '+ (e.message||e) +'</span>');
-    log('Probá recargar la página. Necesitás conexión la primera vez.');
+    els.bootSub.innerHTML = '<span style="color:var(--stamp-deep);font-weight:700">No se pudo iniciar. Recargá la página (necesitás conexión la primera vez).</span>';
   }
 }
 
 async function convert(file){
-  if(!ready){ log('<span class="err">El motor todavía está cargando, esperá unos segundos…</span>'); return; }
+  if(!ready) return;
   els.result.classList.remove('show');
-  els.card.classList.add('busy');
+  els.console.classList.remove('show'); els.console.innerHTML='';
+  els.dropInner.style.display='none';
   log('<b>Procesando '+file.name+'…</b>');
   try{
     const buf = new Uint8Array(await file.arrayBuffer());
@@ -315,12 +347,11 @@ async function convert(file){
     els.meta.innerHTML = '<b>'+n+' pedidos</b> · Andreani_envio.xlsx';
     els.result.classList.add('show');
     els.stamp.style.animation='none'; void els.stamp.offsetWidth; els.stamp.style.animation='';
-    download(); // descarga automática
+    download();
   }catch(e){
     log('<span class="err">✗ Error: '+(e.message||e)+'</span>');
     log('Verificá que sea el CSV exportado de Shopify (orders_export).');
-  }finally{
-    els.card.classList.remove('busy');
+    els.dropInner.style.display='block';
   }
 }
 
@@ -334,17 +365,25 @@ function download(){
 }
 
 // ── eventos ──
-els.file.addEventListener('change', e=>{ if(e.target.files[0]) convert(e.target.files[0]); });
+// un único disparador del selector de archivos (sin <label for>, evita doble apertura)
+function openPicker(e){ e && e.preventDefault(); if(ready) els.file.click(); }
+els.dropInner.addEventListener('click', openPicker);
+els.file.addEventListener('change', e=>{ if(e.target.files[0]) convert(e.target.files[0]); e.target.value=''; });
+
 els.dlBtn.addEventListener('click', download);
 els.againBtn.addEventListener('click', ()=>{
-  els.result.classList.remove('show'); els.file.value=''; lastBlob=null;
+  els.result.classList.remove('show');
+  els.console.classList.remove('show'); els.console.innerHTML='';
+  els.dropInner.style.display='block'; els.dropInner.classList.add('ready');
+  lastBlob=null;
 });
-['dragenter','dragover'].forEach(ev=>els.card.addEventListener(ev,e=>{e.preventDefault();els.card.classList.add('drag');}));
+
+['dragenter','dragover'].forEach(ev=>els.card.addEventListener(ev,e=>{e.preventDefault();if(ready)els.card.classList.add('drag');}));
 ['dragleave','drop'].forEach(ev=>els.card.addEventListener(ev,e=>{e.preventDefault();els.card.classList.remove('drag');}));
 els.card.addEventListener('drop', e=>{
+  if(!ready) return;
   const f = e.dataTransfer.files[0];
   if(f && f.name.toLowerCase().endsWith('.csv')) convert(f);
-  else log('<span class="err">Tiene que ser un archivo .csv</span>');
 });
 
 boot();
