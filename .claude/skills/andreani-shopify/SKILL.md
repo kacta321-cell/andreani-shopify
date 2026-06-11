@@ -20,7 +20,15 @@ Cuando el usuario diga "instalá el skill de Andreani" o similar, corré:
 git clone --depth=1 https://github.com/kacta321-cell/andreani-shopify.git "$env:USERPROFILE\Downloads\andreani-shopify-skill"
 ```
 
-El script se auto-descarga el JSON de localidades y la plantilla Excel de Andreani desde GitHub la primera vez que corre. Solo necesita Python instalado.
+El repo ya incluye el JSON de localidades y la plantilla Excel, así que no necesita descargar nada más.
+
+**Si Python no está instalado**, instalalo automáticamente (Windows):
+```powershell
+winget install -e --id Python.Python.3.12 --accept-package-agreements --accept-source-agreements
+```
+En Mac: `brew install python` · En Linux: ya viene. El script instala `openpyxl` solo si falta.
+
+> Para usuarios sin Claude Code (o que no quieren instalar nada): existe una web app que hace lo mismo en el navegador → https://kacta321-cell.github.io/andreani-shopify/
 
 ## Flujo de conversión
 

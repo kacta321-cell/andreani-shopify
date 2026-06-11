@@ -1,8 +1,16 @@
 # andreani-shopify
 
-Skill para Claude Code que convierte pedidos exportados de Shopify al Excel de envío masivo de Andreani. Sin errores de validación, sin configuración manual.
+Convierte pedidos exportados de Shopify al Excel de envío masivo de Andreani. Sin errores de validación, sin configuración manual.
 
-## Instalación (un solo prompt)
+## Dos formas de usarlo
+
+### 🌐 Opción A — Web app (sin instalar nada)
+
+**→ [kacta321-cell.github.io/andreani-shopify](https://kacta321-cell.github.io/andreani-shopify/)**
+
+Entrás, arrastrás el CSV, descargás el Excel. Todo corre en tu navegador — ningún dato sale de tu compu. Funciona hasta desde el celular.
+
+### 🤖 Opción B — Skill de Claude Code (un solo prompt)
 
 Decile esto a Claude:
 

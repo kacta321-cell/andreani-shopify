@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DESPACHÁ — Shopify → Andreani en un click</title>
+<meta name="description" content="Convertí tus pedidos de Shopify al Excel de envío masivo de Andreani. Sin errores, sin instalar nada. Todo corre en tu navegador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --kraft:#E7DAC0;
+    --kraft-deep:#D8C7A6;
+    --ink:#1C1813;
+    --ink-soft:#4A4235;
+    --stamp:#DD4A1E;
+    --stamp-deep:#B83410;
+    --seal:#1F5C3D;
+    --line:#1C1813;
+    --paper-edge:#F2EADA;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Archivo',sans-serif;
+    background:var(--kraft);
+    color:var(--ink);
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* grano de papel */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.45;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode:multiply;
+  }
+  /* viñeta cálida */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(120% 90% at 50% 0%, transparent 55%, rgba(28,24,19,.13) 100%);
+  }
+  .wrap{position:relative;z-index:2;max-width:760px;margin:0 auto;padding:clamp(24px,5vw,56px) 22px 60px}
+
+  /* ── encabezado tipo etiqueta postal ── */
+  .topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--ink-soft);
+    border-bottom:2px solid var(--line);padding-bottom:10px;margin-bottom:clamp(34px,7vw,64px);
+    opacity:0;animation:fade .7s .1s forwards;
+  }
+  .topbar .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--stamp);margin-right:7px;vertical-align:middle;animation:blink 2.4s infinite}
+  @keyframes blink{0%,70%,100%{opacity:1}80%{opacity:.25}}
+
+  .hero{margin-bottom:clamp(30px,6vw,52px)}
+  .kicker{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--stamp-deep);font-weight:700;
+    margin-bottom:14px;opacity:0;animation:fade .7s .25s forwards;
+  }
+  h1{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(58px,16vw,124px);line-height:.86;letter-spacing:-.03em;
+    text-transform:uppercase;color:var(--ink);position:relative;
+    opacity:0;animation:slideUp .8s .3s cubic-bezier(.2,.9,.25,1) forwards;
+  }
+  h1 .arrow{color:var(--stamp);display:inline-block}
+  .sub{
+    font-size:clamp(17px,3.6vw,22px);max-width:30ch;margin-top:20px;color:var(--ink-soft);
+    font-weight:500;line-height:1.4;
+    opacity:0;animation:fade .7s .5s forwards;
+  }
+  .sub b{color:var(--ink);font-weight:700}
+
+  /* ── tira de pasos ── */
+  .steps{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+    border:2px solid var(--line);margin:clamp(32px,6vw,46px) 0;
+    background:var(--paper-edge);
+    opacity:0;animation:fade .7s .6s forwards;
+  }
+  .step{padding:18px 16px;position:relative}
+  .step:not(:last-child){border-right:2px dashed var(--line)}
+  .step .num{font-family:'Archivo Black',sans-serif;font-size:13px;color:var(--stamp);letter-spacing:.05em}
+  .step .txt{font-size:13.5px;margin-top:7px;line-height:1.35;color:var(--ink-soft);font-weight:500}
+  @media(max-width:560px){
+    .steps{grid-template-columns:1fr}
+    .step:not(:last-child){border-right:none;border-bottom:2px dashed var(--line)}
+  }
+
+  /* ── zona de carga: etiqueta de paquete ── */
+  .label-card{
+    position:relative;background:var(--paper-edge);
+    border:2.5px solid var(--line);
+    padding:clamp(30px,6vw,48px) clamp(22px,5vw,40px);
+    opacity:0;animation:fade .7s .7s forwards;
+    transition:transform .25s ease, box-shadow .25s ease, background .2s;
+    box-shadow:7px 7px 0 var(--line);
+  }
+  .label-card::before{ /* perforación interior */
+    content:"";position:absolute;inset:9px;border:1.5px dashed rgba(28,24,19,.4);pointer-events:none;
+  }
+  .label-card.drag{background:#FBF4E6;transform:translate(-2px,-2px);box-shadow:11px 11px 0 var(--stamp)}
+  .label-card.busy{pointer-events:none}
+  .barcode{height:34px;width:100%;
+    background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 7px,transparent 7px 9px,var(--ink) 9px 10px,transparent 10px 14px);
+    margin-bottom:22px;opacity:.85}
+  .drop-inner{text-align:center;cursor:pointer;display:block}
+  .drop-icon{font-family:'Archivo Black',sans-serif;font-size:40px;color:var(--stamp);line-height:1;margin-bottom:14px}
+  .drop-title{font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:clamp(22px,5vw,30px);letter-spacing:-.01em;line-height:1.05}
+  .drop-hint{font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.05em;color:var(--ink-soft);margin-top:12px}
+  .drop-hint .pick{color:var(--stamp-deep);text-decoration:underline;text-underline-offset:3px;font-weight:700}
+  input[type=file]{display:none}
+
+  /* ── consola de estado ── */
+  .console{
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.7;
+    color:var(--ink-soft);margin-top:20px;min-height:22px;
+    border-top:1.5px dashed rgba(28,24,19,.35);padding-top:14px;
+    display:none;
+  }
+  .console.show{display:block}
+  .console .ln{display:block;white-space:pre-wrap}
+  .console .ln b{color:var(--ink)}
+  .console .ok{color:var(--seal);font-weight:700}
+  .console .err{color:var(--stamp-deep);font-weight:700}
+  .bar{height:6px;background:var(--kraft-deep);margin-top:6px;overflow:hidden;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;width:0;background:var(--stamp);transition:width .4s ease}
+
+  /* ── sello DESPACHADO ── */
+  .result{display:none;margin-top:26px;text-align:center;position:relative}
+  .result.show{display:block}
+  .stamp{
+    display:inline-block;font-family:'Archivo Black',sans-serif;text-transform:uppercase;
+    font-size:clamp(26px,6vw,40px);color:var(--stamp);border:5px solid var(--stamp);
+    padding:8px 22px;letter-spacing:.04em;transform:rotate(-7deg);
+    box-shadow:inset 0 0 0 2px var(--paper-edge);
+    animation:slam .5s cubic-bezier(.2,1.5,.3,1) forwards;
+    mix-blend-mode:multiply;opacity:.92;
+  }
+  @keyframes slam{0%{transform:rotate(-7deg) scale(2.4);opacity:0}60%{opacity:.92}70%{transform:rotate(-7deg) scale(.92)}100%{transform:rotate(-7deg) scale(1);opacity:.92}}
+  .result .meta{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink);margin-top:18px}
+  .result .meta b{color:var(--stamp-deep)}
+  .dl{
+    display:inline-flex;align-items:center;gap:10px;margin-top:18px;cursor:pointer;
+    font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:16px;letter-spacing:.02em;
+    background:var(--ink);color:var(--kraft);border:none;padding:15px 26px;
+    box-shadow:4px 4px 0 var(--stamp);transition:transform .15s, box-shadow .15s;
+  }
+  .dl:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--stamp)}
+  .dl:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--stamp)}
+  .again{display:block;margin:16px auto 0;background:none;border:none;cursor:pointer;
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.08em;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px}
+
+  /* ── privacidad / footer ── */
+  .privacy{
+    margin-top:30px;display:flex;gap:12px;align-items:flex-start;
+    font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:var(--ink-soft);
+    opacity:0;animation:fade .7s .85s forwards;
+  }
+  .privacy .lk{font-size:18px;line-height:1.2}
+  .privacy b{color:var(--ink)}
+  footer{
+    margin-top:42px;padding-top:18px;border-top:2px solid var(--line);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
+    opacity:0;animation:fade .7s 1s forwards;
+  }
+  footer a{color:var(--stamp-deep);font-weight:700;text-decoration:none;border-bottom:1.5px solid var(--stamp-deep)}
+
+  @keyframes fade{to{opacity:1}}
+  @keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <span><span class="dot"></span>Conversor de despacho</span>
+    <span id="engine">Motor: iniciando…</span>
+  </div>
+
+  <header class="hero">
+    <div class="kicker">Shopify &nbsp;→&nbsp; Andreani · Envío masivo</div>
+    <h1>Despa<span class="arrow">chá</span>.</h1>
+    <p class="sub">Subí el CSV de tus pedidos y descargá el Excel de Andreani <b>listo para subir</b>. Sin errores, sin instalar nada.</p>
+  </header>
+
+  <div class="steps">
+    <div class="step"><div class="num">01 / EXPORTÁ</div><div class="txt">En Shopify: Pedidos → Exportar → CSV para Excel.</div></div>
+    <div class="step"><div class="num">02 / SOLTÁ</div><div class="txt">Arrastrá ese CSV a la etiqueta de acá abajo.</div></div>
+    <div class="step"><div class="num">03 / SUBÍ</div><div class="txt">Cargá el Excel en Andreani → Envío Masivo → A domicilio.</div></div>
+  </div>
+
+  <section class="label-card" id="card">
+    <div class="barcode"></div>
+
+    <label class="drop-inner" id="dropInner" for="fileInput">
+      <div class="drop-icon">↓</div>
+      <div class="drop-title">Soltá tu CSV acá</div>
+      <div class="drop-hint">o <span class="pick">elegí el archivo</span> &nbsp;·&nbsp; orders_export.csv</div>
+    </label>
+    <input type="file" id="fileInput" accept=".csv">
+
+    <div class="console" id="console"></div>
+
+    <div class="result" id="result">
+      <div class="stamp" id="stamp">Despachado</div>
+      <div class="meta" id="meta"></div>
+      <button class="dl" id="dlBtn">⬇ Descargar Excel</button>
+      <button class="again" id="againBtn">convertir otro archivo</button>
+    </div>
+  </section>
+
+  <div class="privacy">
+    <span class="lk">🔒</span>
+    <span><b>Todo corre en tu navegador.</b> Ningún pedido, dato de cliente ni dirección sale de tu computadora. No hay servidor: el archivo se arma localmente.</span>
+  </div>
+
+  <footer>
+    <span>© 2026 · Hecho para vendedores AR</span>
+    <span>Código abierto · <a href="https://github.com/kacta321-cell/andreani-shopify" target="_blank" rel="noopener">GitHub ↗</a></span>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
+<script>
+const RAW_BASE = "./"; // mismos archivos servidos por GitHub Pages (same-origin)
+const els = {
+  engine:   document.getElementById('engine'),
+  card:     document.getElementById('card'),
+  dropInner:document.getElementById('dropInner'),
+  file:     document.getElementById('fileInput'),
+  console:  document.getElementById('console'),
+  result:   document.getElementById('result'),
+  stamp:    document.getElementById('stamp'),
+  meta:     document.getElementById('meta'),
+  dlBtn:    document.getElementById('dlBtn'),
+  againBtn: document.getElementById('againBtn'),
+};
+
+let pyodide = null, ready = false, lastBlob = null;
+
+function log(msg, cls=''){
+  els.console.classList.add('show');
+  const ln = document.createElement('span');
+  ln.className = 'ln' + (cls ? ' '+cls : '');
+  ln.innerHTML = msg;
+  els.console.appendChild(ln);
+  els.console.scrollTop = els.console.scrollHeight;
+  return ln;
+}
+function progressBar(){
+  const wrap = document.createElement('div');
+  wrap.className = 'bar'; const i = document.createElement('i');
+  wrap.appendChild(i); els.console.appendChild(wrap);
+  return p => { i.style.width = Math.max(0,Math.min(100,p))+'%'; };
+}
+
+async function boot(){
+  try{
+    els.console.classList.add('show');
+    const setP = (function(){ log('<b>Inicializando motor de conversión…</b>'); return progressBar(); })();
+    setP(8);
+    log('› Cargando Python (Pyodide)…');
+    pyodide = await loadPyodide();
+    setP(45);
+    log('› Instalando openpyxl…');
+    await pyodide.loadPackage('micropip');
+    const micropip = pyodide.pyimport('micropip');
+    await micropip.install('openpyxl');
+    setP(68);
+    log('› Descargando plantilla de Andreani y localidades…');
+    const [tpl, jsonTxt, coreTxt] = await Promise.all([
+      fetch(RAW_BASE+'EnvioMasivoExcelPaquetes.xlsx').then(r=>r.arrayBuffer()),
+      fetch(RAW_BASE+'andreani_localidades.json').then(r=>r.text()),
+      fetch(RAW_BASE+'convertir_core.py').then(r=>r.text()),
+    ]);
+    pyodide.FS.writeFile('/template.xlsx', new Uint8Array(tpl));
+    pyodide.FS.writeFile('/localidades.json', jsonTxt);
+    pyodide.FS.writeFile('/convertir_core.py', coreTxt);
+    setP(88);
+    pyodide.runPython("import sys; sys.path.insert(0,'/'); import convertir_core");
+    setP(100);
+    log('<span class="ok">✓ Listo. Soltá tu CSV cuando quieras.</span>');
+    els.engine.textContent = 'Motor: listo ✓';
+    ready = true;
+  }catch(e){
+    els.engine.textContent = 'Motor: error';
+    log('<span class="err">✗ No se pudo iniciar: '+ (e.message||e) +'</span>');
+    log('Probá recargar la página. Necesitás conexión la primera vez.');
+  }
+}
+
+async function convert(file){
+  if(!ready){ log('<span class="err">El motor todavía está cargando, esperá unos segundos…</span>'); return; }
+  els.result.classList.remove('show');
+  els.card.classList.add('busy');
+  log('<b>Procesando '+file.name+'…</b>');
+  try{
+    const buf = new Uint8Array(await file.arrayBuffer());
+    pyodide.FS.writeFile('/orders.csv', buf);
+    const n = pyodide.runPython(
+      "convertir_core.convertir('/orders.csv','/template.xlsx','/localidades.json','/output.xlsx')"
+    );
+    const out = pyodide.FS.readFile('/output.xlsx');
+    lastBlob = new Blob([out], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    log('<span class="ok">✓ '+n+' pedidos convertidos.</span>');
+    els.meta.innerHTML = '<b>'+n+' pedidos</b> · Andreani_envio.xlsx';
+    els.result.classList.add('show');
+    els.stamp.style.animation='none'; void els.stamp.offsetWidth; els.stamp.style.animation='';
+    download(); // descarga automática
+  }catch(e){
+    log('<span class="err">✗ Error: '+(e.message||e)+'</span>');
+    log('Verificá que sea el CSV exportado de Shopify (orders_export).');
+  }finally{
+    els.card.classList.remove('busy');
+  }
+}
+
+function download(){
+  if(!lastBlob) return;
+  const url = URL.createObjectURL(lastBlob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'Andreani_envio.xlsx';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+}
+
+// ── eventos ──
+els.file.addEventListener('change', e=>{ if(e.target.files[0]) convert(e.target.files[0]); });
+els.dlBtn.addEventListener('click', download);
+els.againBtn.addEventListener('click', ()=>{
+  els.result.classList.remove('show'); els.file.value=''; lastBlob=null;
+});
+['dragenter','dragover'].forEach(ev=>els.card.addEventListener(ev,e=>{e.preventDefault();els.card.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>els.card.addEventListener(ev,e=>{e.preventDefault();els.card.classList.remove('drag');}));
+els.card.addEventListener('drop', e=>{
+  const f = e.dataTransfer.files[0];
+  if(f && f.name.toLowerCase().endsWith('.csv')) convert(f);
+  else log('<span class="err">Tiene que ser un archivo .csv</span>');
+});
+
+boot();
+</script>
+</body>
+</html>
